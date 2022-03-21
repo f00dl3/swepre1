@@ -39,7 +39,7 @@ app
         try { bookArray.sort(sortByProperty("title")); } catch (e) {}
         let sortedBookMasterArray = { "books": bookArray };
         rData = JSON.stringify(sortedBookMasterArray);
-        res.status(201).send(rData);
+        res.status(200).send(rData);
     })
     .post("/api/books", (req, res) => {
         let maxBookID = -1;
