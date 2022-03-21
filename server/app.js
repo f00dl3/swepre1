@@ -45,6 +45,7 @@ app
         let maxBookID = -1;
         let bookJSONdata = "";
         try { bookJSONdata = datastore; } catch (e) { rData += " Err1: " + e.message + "\n"; }
+        //console.log("Read file input: " + datastore);
         let bookParsedJSON = JSON.parse(bookJSONdata);
         let bookArray = bookParsedJSON.books;
         try { maxBookID = getMax2(bookArray, "id"); } catch (e) { rData += " Err2: " + e.message + "\n"; }
@@ -53,11 +54,13 @@ app
         let title = ""; try { title = req.body.title; } catch (e) { }
         let yearPublished = "";try { yearPublished = req.body.yearPublished; } catch (e) { }
         let tJsonObj = { id: tId, author: author, title: title, yearPublished: yearPublished };
-        //console.log(bookArray.length);
-        if(!typeof bookArray === undefined) { bookArray.push(tJsonObj); } else { bookArray = tJsonObj; }
+        //console.log("Book array to write: " + bookArray);
+        try { bookArray.push(tJsonObj); } catch (e) { bookArray = [ tJsonObj ]; }
         nDatastore = { "books": bookArray };
         fs.writeFile(dsFile, JSON.stringify(nDatastore), err => { });
+        //console.log("dbg: New Datastore = " + JSON.stringify(nDatastore));
         datastore = fs.readFileSync(dsFile);
+        //console.log("dbg: Re-read file = " + datastore);
         res.status(201).send(JSON.stringify(tJsonObj));                
     })
     .delete("/api/books", (req, res) => {
