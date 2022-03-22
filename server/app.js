@@ -7,9 +7,8 @@ const fs = require('fs');
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 
-let dsFile = "datastore.json";
-let datastore = fs.readFileSync(dsFile);
 let nDatastore = {};
+let dsFile = "datastore.json";
 let rData = "";
 
 function getMax2(array, prop) {
@@ -44,8 +43,9 @@ app
     .post("/api/books", (req, res) => {
         let maxBookID = -1;
         let bookJSONdata = "";
+        let datastore = fs.readFileSync(dsFile);
         try { bookJSONdata = datastore; } catch (e) { rData += " Err1: " + e.message + "\n"; }
-        //console.log("Read file input: " + datastore);
+        console.log("Read file input: " + datastore);
         let bookParsedJSON = JSON.parse(bookJSONdata);
         let bookArray = bookParsedJSON.books;
         try { maxBookID = getMax2(bookArray, "id"); } catch (e) { rData += " Err2: " + e.message + "\n"; }
@@ -54,19 +54,19 @@ app
         let title = ""; try { title = req.body.title; } catch (e) { }
         let yearPublished = "";try { yearPublished = req.body.yearPublished; } catch (e) { }
         let tJsonObj = { id: tId, author: author, title: title, yearPublished: yearPublished };
-        //console.log("Book array to write: " + bookArray);
+        console.log("Book array to write: " + bookArray);
         try { bookArray.push(tJsonObj); } catch (e) { bookArray = [ tJsonObj ]; }
         nDatastore = { "books": bookArray };
         fs.writeFile(dsFile, JSON.stringify(nDatastore), err => { });
-        //console.log("dbg: New Datastore = " + JSON.stringify(nDatastore));
+        console.log("dbg: New Datastore = " + JSON.stringify(nDatastore));
         datastore = fs.readFileSync(dsFile);
-        //console.log("dbg: Re-read file = " + datastore);
+        console.log("dbg: Re-read file = " + datastore);
         res.status(201).send(JSON.stringify(tJsonObj));                
     })
     .delete("/api/books", (req, res) => {
         nDatastore = { "books": {} };
         fs.writeFile(dsFile, JSON.stringify(nDatastore), err => { });
-        datastore = fs.readFileSync(dsFile);
+        let xdatastore = fs.readFileSync(dsFile);
         res.status(204).send();                
     });
 
